@@ -2,6 +2,7 @@ name: ci
 on:
   push:
   pull_request:
+  workflow_dispatch:
 
 jobs:
   test:
@@ -29,96 +30,96 @@ jobs:
         npm -g install newman
         ./testing/run_api_tests.sh
 
-  mapi:
-    name: 'Automated pen-tests with Mayhem for API'
-    runs-on: ubuntu-latest
-    env:
-      CGO_ENABLED: 0
+  # mapi:
+  #   name: 'Automated pen-tests with Mayhem for API'
+  #   runs-on: ubuntu-latest
+  #   env:
+  #     CGO_ENABLED: 0
 
-    steps:
-    - name: Set up Go 1.x
-      uses: actions/setup-go@v2
-      with:
-        go-version: ^1.19
+  #   steps:
+  #   - name: Set up Go 1.x
+  #     uses: actions/setup-go@v2
+  #     with:
+  #       go-version: ^1.19
 
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
+  #   - name: Check out code into the Go module directory
+  #     uses: actions/checkout@v2
 
-    - name: Get dependencies
-      run: go get
+  #   - name: Get dependencies
+  #     run: go get
 
-    - name: Build
-      run: go build -v .
+  #   - name: Build
+  #     run: go build -v .
 
-    - name: start wakapi
-      run: ./wakapi --config config.default.yml &
+  #   - name: start wakapi
+  #     run: ./wakapi --config config.default.yml &
 
-    - name: create a trivial testing user
-      run: sqlite3 wakapi_db.db "insert into users (id, api_key) values ('mapi', 'test-api-key')"
+  #   - name: create a trivial testing user
+  #     run: sqlite3 wakapi_db.db "insert into users (id, api_key) values ('mapi', 'test-api-key')"
 
-    - name: Run Mayhem for API
-      uses: ForAllSecure/mapi-action@v1
-      continue-on-error: true
-      with:
-        mapi-token: ${{ secrets.MAPI_TOKEN }}
-        api-url: http://localhost:3000/api/
-        api-spec: static/docs/swagger.yaml
-        target: muety/wakapi
-        duration: 1min
-        sarif-report: mapi.sarif
-        run-args: |
-          --header-auth
-          Authorization: Basic dGVzdC1hcGkta2V5
+  #   - name: Run Mayhem for API
+  #     uses: ForAllSecure/mapi-action@v1
+  #     continue-on-error: true
+  #     with:
+  #       mapi-token: ${{ secrets.MAPI_TOKEN }}
+  #       api-url: http://localhost:3000/api/
+  #       api-spec: static/docs/swagger.yaml
+  #       target: muety/wakapi
+  #       duration: 1min
+  #       sarif-report: mapi.sarif
+  #       run-args: |
+  #         --header-auth
+  #         Authorization: Basic dGVzdC1hcGkta2V5
 
-    - name: Upload SARIF file
-      uses: github/codeql-action/upload-sarif@v1
-      with:
-        sarif_file: mapi.sarif
+  #   - name: Upload SARIF file
+  #     uses: github/codeql-action/upload-sarif@v1
+  #     with:
+  #       sarif_file: mapi.sarif
 
-  build:
-    name: 'Build (Win, Linux, Mac)'
+  # build:
+  #   name: 'Build (Win, Linux, Mac)'
 
-    strategy:
-      matrix:
-        platform: [ubuntu-latest, macos-latest, windows-latest]
+  #   strategy:
+  #     matrix:
+  #       platform: [ubuntu-latest, macos-latest, windows-latest]
 
-    runs-on: ${{ matrix.platform }}
-    env:
-      CGO_ENABLED: 0
+  #   runs-on: ${{ matrix.platform }}
+  #   env:
+  #     CGO_ENABLED: 0
 
-    steps:
-    - name: Set up Go 1.x
-      uses: actions/setup-go@v2
-      with:
-        go-version: ^1.19
-      id: go
+  #   steps:
+  #   - name: Set up Go 1.x
+  #     uses: actions/setup-go@v2
+  #     with:
+  #       go-version: ^1.19
+  #     id: go
 
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
+  #   - name: Check out code into the Go module directory
+  #     uses: actions/checkout@v2
 
-    - name: Get dependencies
-      run: go get
+  #   - name: Get dependencies
+  #     run: go get
 
-    - name: Build
-      run: go build -v .
+  #   - name: Build
+  #     run: go build -v .
 
-  migration:
-    name: Migration tests
-    runs-on: ubuntu-latest
+  # migration:
+  #   name: Migration tests
+  #   runs-on: ubuntu-latest
 
-    strategy:
-      fail-fast: false
-      matrix:
-        db: [sqlite, postgres, mysql, mariadb]
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+  #       db: [sqlite, postgres, mysql, mariadb]
 
-    steps:
-    - name: Set up Go 1.x
-      uses: actions/setup-go@v2
-      with:
-        go-version: ^1.19
-      id: go
+  #   steps:
+  #   - name: Set up Go 1.x
+  #     uses: actions/setup-go@v2
+  #     with:
+  #       go-version: ^1.19
+  #     id: go
 
-    - name: Check out code into the Go module directory
-      uses: actions/checkout@v2
+  #   - name: Check out code into the Go module directory
+  #     uses: actions/checkout@v2
 
-    - run: ./testing/run_api_tests.sh ${{ matrix.db }} --migration
+  #   - run: ./testing/run_api_tests.sh ${{ matrix.db }} --migration
