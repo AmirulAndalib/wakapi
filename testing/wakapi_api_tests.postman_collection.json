@@ -3376,7 +3376,7 @@
 					"function getUtcOffset(cb) {",
 					"    let offset = pm.globals.get('utcOffset')",
 					"    if (offset) return cb(offset)",
-					"    pm.sendRequest(`https://worldtimeapi.org/api/timezone/${userZone}`, (err, res) => {",
+					"    pm.sendRequest(`http://worldtimeapi.org/api/timezone/${userZone}`, (err, res) => {",
 					"        offset = res.json().utc_offset",
 					"        pm.globals.set('utcOffset', offset)",
 					"        return cb(offset)",
