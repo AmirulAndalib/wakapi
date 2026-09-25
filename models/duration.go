@@ -14,10 +14,16 @@ import (
 // TODO: support multiple durations per time per user for different heartbeat timeouts
 // see discussion at https://github.com/muety/wakapi/issues/675
 type Duration struct {
-	ID     int64  `json:"-" gorm:"primaryKey; autoIncrement"` // https://github.com/muety/wakapi/issues/777
+	ID int64 `json:"-" gorm:"primaryKey; autoIncrement"` // https://github.com/muety/wakapi/issues/777
+	// Note: we missed to add a *models.User field here (in contrast to, for example, the heartbeats model, which has one), which results in the user_id column to not actually have a foreign key constraint on the users table.
+	// Instead, it's just an indexed string column like every other. This doesn't actually hurt much except for the fact that user deletion wouldn't cascade to durations and we will end up with orphaned rows.
+	// TODO: implement background deletion of orphaned durations
+	// We could add such a column (which, on the database side, primarily results in the creation of a foreign key constraint). However, two complications go along with this:
+	// First, AutoMigrateing this will simply do nothing on SQLite, because SQLite doesn't support to retroactively add constraints on existing tables. We'd have to create a new table, copy contents and drop the old one (as already being done by quite a few migrations today).
+	// Second, we'd have to have a migration to clean up orphaned durations before we can create the constraints.
+	// Given the very limited benefit of cascade deletion we'd get from a foreign key constraint here, I think it's not really worth the effort.
 	UserID string `json:"user_id" gorm:"not null; index:idx_time_duration_user"`
-	// note: on sqlite, the time column is stored as INTEGER (Unix epoch milliseconds) rather than TEXT
-	// see https://github.com/muety/wakapi/issues/882 for details
+	// Note: on sqlite, the time column is stored as INTEGER (Unix epoch milliseconds) rather than TEXT, see https://github.com/muety/wakapi/issues/882 for details
 	Time            CustomTime    `json:"time" hash:"ignore" gorm:"not null; index:idx_time_duration; index:idx_time_duration_user"` // time of first heartbeat of this duration
 	Duration        time.Duration `json:"duration" hash:"ignore" gorm:"not null"`
 	Project         string        `json:"project"`
