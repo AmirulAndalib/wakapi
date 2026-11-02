@@ -28,12 +28,11 @@ require (
 	github.com/fxamacker/cbor/v2 v2.9.4 // indirect
 	github.com/getsentry/sentry-go v0.49.0 // indirect
 	github.com/glebarez/go-sqlite v1.23.0 // indirect
-	github.com/go-jose/go-jose/v4 v4.1.5 // indirect
+	github.com/go-jose/go-jose/v4 v4.1.6 // indirect
 	github.com/go-sql-driver/mysql v1.10.1 // indirect
 	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/go-webauthn/webauthn v0.18.1 // indirect
 	github.com/go-webauthn/x v0.3.1 // indirect
-	github.com/gofrs/uuid/v5 v5.5.1 // indirect
 	github.com/gohugoio/hashstructure v1.1.0 // indirect
 	github.com/golang-jwt/jwt/v5 v5.3.1 // indirect
 	github.com/google/go-tpm v0.9.8 // indirect
